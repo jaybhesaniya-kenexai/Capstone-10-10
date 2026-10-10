@@ -48,7 +48,6 @@ def data_load_from_csv_job():
              from  {CSV_FILE_PATH}
                 with(
                 format = 'CSV',
-                lastrow=100000,
                 firstrow=2
                 ) ;
              """   
@@ -80,7 +79,7 @@ with DAG(
 
 
     
-    run_dbt = BashOperator(
+    run_silver_dbt = BashOperator(
         task_id="run_dbt_bronze_to_silver",
 
         bash_command=f"""
@@ -90,7 +89,22 @@ with DAG(
         cd {DBT_PROJECT_DIR}
         pwd 
         echo "Running dbt Bronze -> Silver models..."
-        dbt run  --profiles-dir {DBT_PROFILES_DIR} 
+        dbt run --select --tag silver --profiles-dir {DBT_PROFILES_DIR} 
+        echo "dbt completed successfully"
+        """,
+    )
+
+    run_gold_dbt=BashOperator(
+        task_id="run_dbt_silver_to_gold",
+
+        bash_command=f"""
+        set -e
+        echo ""
+        echo "dbt project directory:"
+        cd {DBT_PROJECT_DIR}
+        pwd 
+        echo "Running dbt silver -> Gold models..."
+        dbt run --select --tag gols --profiles-dir {DBT_PROFILES_DIR} 
         echo "dbt completed successfully"
         """,
     )
@@ -102,4 +116,4 @@ with DAG(
 
 
 
-    start >>  data_load_from_csv >> end
+    start >>  data_load_from_csv >> run_silver_dbt >> run_gold_dbt >> end

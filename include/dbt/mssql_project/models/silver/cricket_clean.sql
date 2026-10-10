@@ -41,7 +41,12 @@ SELECT
     upper(trim(batsman_nationality)) as batsman_nationality ,
     upper(trim(batting_hand)) as batting_hand,
     upper(trim(batsman_role)) as batsman_role ,
-    upper(trim(batsman_email)) as batsman_email ,
+    
+    case when  batsman_email  like '%_@_%._%'
+       then  upper(trim(batsman_email)) 
+    else NULL
+     end  as batsman_email ,
+    
     try_cast( batsman_phone as int) as batsman_phone ,
     try_cast( batsman_icc_rating as int ) as batsman_icc_rating,
     upper(trim(bowler_id)) as bowler_id ,
@@ -58,7 +63,5 @@ SELECT
     upper(trim(drs_original_decision)) as drs_original_decision,
     upper(trim(drs_outcome)) as drs_outcome ,
 
-    getdate() as load_time
-
-from airflow_test.bronze_cricket
-where batsman_email  like '%_@_%._%';
+    getdate() as insert_date
+from airflow_test.dbo.bronze_cricket ;
