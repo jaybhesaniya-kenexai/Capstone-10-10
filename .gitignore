@@ -10,3 +10,5 @@ webserver_config.py
 airflow.cfg
 airflow.db
 include/data/incoming/banking_datset_1.csv
+include/data
+include/dbt/mssql_project/models/dummy.sql
