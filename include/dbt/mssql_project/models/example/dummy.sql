@@ -1,2 +1,8 @@
-select top 5 *
-from banking_data_raw ;
+{{ config(
+    materialized='table'
+    ) }}
+
+SELECT
+    1 AS id,
+    'Test' AS name,
+    GETDATE() AS created_at;
